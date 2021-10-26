@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Lazy Corridor.mp3-f327437f70444ba07fa065b8b09d8bc1.mp3str"
+
+[deps]
+
+source_file="res://Music/Lazy Corridor.mp3"
+dest_files=[ "res://.import/Lazy Corridor.mp3-f327437f70444ba07fa065b8b09d8bc1.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

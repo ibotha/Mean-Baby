@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Siren Streets.mp3-e4d9159afe77804d12f4934b4e426d57.mp3str"
+
+[deps]
+
+source_file="res://Music/Siren Streets.mp3"
+dest_files=[ "res://.import/Siren Streets.mp3-e4d9159afe77804d12f4934b4e426d57.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0
