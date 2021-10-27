@@ -54,10 +54,6 @@ func generate() -> void:
 	fill_world()
 	generate_level()
 	generate_doors()
-	#generate_inner()
-	
-	#generate the doors
-	#generate_doors()
 	
 	emit_signal("finished")
 
@@ -186,6 +182,6 @@ func _ready() -> void:
 	generate()
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("space") or event.is_action_pressed("ui_accept"):
-		reload_level()
+#func _unhandled_input(event: InputEvent) -> void:
+#	if event.is_action_pressed("space") or event.is_action_pressed("ui_accept"):
+#		reload_level()
