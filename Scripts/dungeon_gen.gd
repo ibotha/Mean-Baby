@@ -18,9 +18,9 @@ export(float, 0 , 1) var ground_probability := 0.1
 onready var size := inner_size + Vector2(2, 2)# * perimeter_size
 
 # Private variables
-onready var _tilemap_walls : TileMap = $YSort/Walls
+onready var _tilemap_walls : TileMap = $Walls
 onready var _tilemap_floor : TileMap = $Floor
-onready var _tilemap_doors : TileMap = $YSort/Doors
+onready var _tilemap_doors : TileMap = $Doors
 onready var _player = get_node("YSort/Player")
 
 var _rng := RandomNumberGenerator.new()
@@ -82,10 +82,9 @@ func fill_world() -> void:
 
 	for x in range(-perimeter_size.x, size.x + perimeter_size.x):
 		for y in range(-perimeter_size.y, size.y + perimeter_size.y):
-			_tilemap_walls.set_cell(x, y, _pick_random_texture(Cell.OUTER))
-			_tilemap_floor.set_cell(x, y, _pick_random_texture(Cell.GROUND))
+			_tilemap_walls.set_cell(x, y, 0)
+			_tilemap_floor.set_cell(x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 	_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
-	_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 
 
 #region WALKER
@@ -97,7 +96,7 @@ func generate_level():
 	
 	#walker.queue_free()
 	for location in map:
-		_tilemap_walls.set_cellv(location, -1)
+		_tilemap_walls.set_cellv(location, 1)
 	_tilemap_walls.update_bitmask_region(borders.position, borders.end)
 
 
@@ -166,19 +165,19 @@ func get_end_room():
 	return end_room
 #endregion
 
-#region RANDOM TEXTURES
-func _pick_random_texture(cell_type: int) -> int:
-	# Randomly picks a tile based on the three types: `Cell.OUTER`, `Cell.GROUND` & `Cell.OBSTACLE`.
-	# Returns the id of the cell in the TileSet resource.
-	var interval := Vector2()
-	if cell_type == Cell.OUTER:
-		interval = Vector2(0, 0)
-	elif cell_type == Cell.GROUND:
-		interval = Vector2(0, 8)
-	elif cell_type == Cell.OBSTACLE:
-		interval = Vector2(0, 0)
-	return _rng.randi_range(interval.x, interval.y)
-#endregion
+func get_subtile_with_priority(id, tilemap: TileMap):
+	var tiles = tilemap.tile_set
+	var rect = tilemap.tile_set.tile_get_region(id)
+	var size_x = rect.size.x / tiles.autotile_get_size(id).x
+	var size_y = rect.size.y / tiles.autotile_get_size(id).y
+	var tile_array = []
+	for x in range(size_x):
+		for y in range(size_y):
+			var priority = tiles.autotile_get_subtile_priority(id, Vector2(x ,y))
+			for p in priority:
+				tile_array.append(Vector2(x,y))
+
+	return tile_array[randi() % tile_array.size()]
 
 func reload_level():
 	get_tree().reload_current_scene()
