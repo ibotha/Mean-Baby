@@ -10,7 +10,7 @@ enum Cell {OBSTACLE, GROUND, OUTER}
 
 export var player_start_pos = Vector2(150, 150)
 export var grid_pixel_size := 16
-export var inner_size := Vector2(400, 400)
+export var inner_size := Vector2(200, 200)
 export var perimeter_size := Vector2(10, 10)
 export(float, 0 , 1) var ground_probability := 0.1
 
