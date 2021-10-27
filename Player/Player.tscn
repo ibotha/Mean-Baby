@@ -649,7 +649,7 @@ script = ExtResource( 2 )
 position = Vector2( 0, -5.009 )
 texture = ExtResource( 1 )
 hframes = 61
-frame = 22
+frame = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = -1.5708
@@ -708,7 +708,7 @@ current = true
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 position = Vector2( -5.6235, -5.67605 )
 frames = SubResource( 57 )
-frame = 3
+frame = 2
 playing = true
 
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
