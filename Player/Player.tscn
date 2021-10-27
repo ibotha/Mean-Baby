@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=2]
+[gd_scene load_steps=66 format=2]
 
 [ext_resource path="res://Player/Player-sheet.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
@@ -6,6 +6,8 @@
 [ext_resource path="res://Player/SwordHitbox.gd" type="Script" id=4]
 [ext_resource path="res://Overlap/Hurtbox.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Player/Flame.png" type="Texture" id=6]
+[ext_resource path="res://Images/Environment/Light.png" type="Texture" id=7]
+[ext_resource path="res://Player/Shadow.png" type="Texture" id=8]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 2.682
@@ -645,13 +647,19 @@ animations = [ {
 collision_layer = 2
 script = ExtResource( 2 )
 
+[node name="Shadow" type="Sprite" parent="."]
+light_mask = 0
+position = Vector2( 0.498, 1.479 )
+texture = ExtResource( 8 )
+
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0, -5.009 )
 texture = ExtResource( 1 )
 hframes = 61
-frame = 8
+frame = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 rotation = -1.5708
 shape = SubResource( 1 )
 
@@ -683,6 +691,7 @@ parameters/Roll/blend_position = Vector2( 0, 1 )
 parameters/Run/blend_position = Vector2( 0, 1 )
 
 [node name="HitboxPivot" type="Position2D" parent="."]
+visible = false
 position = Vector2( 0, -1.739 )
 rotation = 1.5708
 
@@ -696,6 +705,7 @@ shape = SubResource( 49 )
 disabled = true
 
 [node name="Hurtbox" parent="." instance=ExtResource( 5 )]
+visible = false
 position = Vector2( 0, -3.452 )
 collision_layer = 4
 
@@ -710,6 +720,11 @@ position = Vector2( -5.6235, -5.67605 )
 frames = SubResource( 57 )
 frame = 2
 playing = true
+
+[node name="Light2D" type="Light2D" parent="AnimatedSprite"]
+texture = ExtResource( 7 )
+color = Color( 0.317647, 0.517647, 0.776471, 1 )
+shadow_enabled = true
 
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 
