@@ -1,4 +1,4 @@
-[gd_scene load_steps=66 format=2]
+[gd_scene load_steps=68 format=2]
 
 [ext_resource path="res://Player/Player-sheet.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
@@ -6,7 +6,7 @@
 [ext_resource path="res://Player/SwordHitbox.gd" type="Script" id=4]
 [ext_resource path="res://Overlap/Hurtbox.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Player/Flame.png" type="Texture" id=6]
-[ext_resource path="res://Images/Environment/Light.png" type="Texture" id=7]
+[ext_resource path="res://Environment/Light.png" type="Texture" id=7]
 [ext_resource path="res://Player/Shadow.png" type="Texture" id=8]
 
 [sub_resource type="CapsuleShape2D" id=1]
@@ -611,6 +611,30 @@ height = 6.0
 radius = 2.35
 height = 2.6
 
+[sub_resource type="Animation" id=58]
+resource_name = "Shoot"
+length = 0.3
+tracks/0/type = "bezier"
+tracks/0/path = NodePath("Flame/Sprite:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"points": PoolRealArray( 1, -0.01, 0, 0.01, 0, 1.5, -0.01, 0, 0.02, 0, 1, -0.02, 0, 0.02, 0 ),
+"times": PoolRealArray( 0, 0.0321495, 0.3 )
+}
+tracks/1/type = "bezier"
+tracks/1/path = NodePath("Flame/Sprite:scale:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"points": PoolRealArray( 1, -0.01, 0, 0.01, 0, 1.5, -0.01, 0, 0.02, 0, 1, -0.02, 0, 0.02, 0 ),
+"times": PoolRealArray( 0, 0.0321495, 0.3 )
+}
+
 [sub_resource type="AtlasTexture" id=51]
 atlas = ExtResource( 6 )
 region = Rect2( 0, 0, 16, 16 )
@@ -643,8 +667,11 @@ animations = [ {
 "speed": 10.0
 } ]
 
+[sub_resource type="CircleShape2D" id=59]
+radius = 1.92999
+
 [node name="Player" type="KinematicBody2D"]
-collision_layer = 2
+collision_layer = 32
 script = ExtResource( 2 )
 
 [node name="Shadow" type="Sprite" parent="."]
@@ -715,16 +742,33 @@ shape = SubResource( 50 )
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 
-[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-position = Vector2( -5.6235, -5.67605 )
+[node name="FlamePivot" type="Position2D" parent="."]
+position = Vector2( 0, -3 )
+
+[node name="FlameDestination" type="Position2D" parent="FlamePivot"]
+position = Vector2( 8, 0 )
+
+[node name="FlameAnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Shoot = SubResource( 58 )
+
+[node name="Flame" type="KinematicBody2D" parent="."]
+position = Vector2( -7.55, -3 )
+collision_layer = 0
+
+[node name="Sprite" type="AnimatedSprite" parent="Flame"]
+position = Vector2( 0.591, 0 )
 frames = SubResource( 57 )
-frame = 2
+frame = 5
 playing = true
 
-[node name="Light2D" type="Light2D" parent="AnimatedSprite"]
+[node name="Light2D" type="Light2D" parent="Flame/Sprite"]
+position = Vector2( -0.54567, 0.248032 )
 texture = ExtResource( 7 )
 color = Color( 0.317647, 0.517647, 0.776471, 1 )
 shadow_enabled = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Flame"]
+shape = SubResource( 59 )
 
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 
