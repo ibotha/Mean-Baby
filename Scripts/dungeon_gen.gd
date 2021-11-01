@@ -48,7 +48,7 @@ func generate() -> void:
 	_tilemap_doors.clear()
 	_tilemap_floor.clear()
 	_array_door_positions = []
-	_player.set_position(Vector2((player_start_pos.x + 0.5) * grid_pixel_size, (player_start_pos.y + 1) * grid_pixel_size))
+	_player.set_position(Vector2((player_start_pos.x + 5 + 0.5) * grid_pixel_size, (player_start_pos.y + 5 + 1) * grid_pixel_size))
 	
 	emit_signal("started")
 	_rng.randomize()
@@ -71,20 +71,15 @@ func load_custom_rooms(x_offset, y_offset):
 		
 		for x in rooms_floors.get_cell_size().x:
 			for y in rooms_floors.get_cell_size().y:
-				x += x_offset
-				y += y_offset
-				#rooms_floors.get_cell(x, y)
-				_tilemap_floor.set_cell(x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
+				_tilemap_floor.set_cell(x + x_offset, y + y_offset, rooms_floors.get_cell(x, y))
+				_tilemap_walls.set_cell(x + x_offset, y + y_offset, -1)
 				print("placing floor with index : 0 at\tx: ", x, " y: ", y)
 		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		
 		
 		for x in rooms_walls.get_cell_size().x:
 			for y in rooms_walls.get_cell_size().y:
-				x += x_offset
-				y += y_offset
-				#rooms_walls.get_cell(x, y)
-				_tilemap_walls.set_cell(x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_walls))
+				_tilemap_walls.set_cell(x + x_offset, y + y_offset, rooms_walls.get_cell(x, y))
 		_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 	pass
 
