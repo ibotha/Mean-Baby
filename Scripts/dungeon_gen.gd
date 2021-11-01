@@ -66,14 +66,11 @@ func load_custom_rooms(x_offset, y_offset):
 	for room in room_collections:
 		var rooms_floors = room.get_node("Floor")
 		var rooms_walls = room.get_node("Walls")
-		print(rooms_floors.get_cell_size())
-		print(rooms_walls.get_cell_size())
 		
 		for x in rooms_floors.get_cell_size().x:
 			for y in rooms_floors.get_cell_size().y:
 				_tilemap_floor.set_cell(x + x_offset, y + y_offset, rooms_floors.get_cell(x, y))
 				_tilemap_walls.set_cell(x + x_offset, y + y_offset, -1)
-				print("placing floor with index : 0 at\tx: ", x, " y: ", y)
 		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		
 		
