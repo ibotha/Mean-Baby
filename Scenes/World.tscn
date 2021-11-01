@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scenes/Wall_Tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://Scenes/Floor_Tileset.tres" type="TileSet" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Environment/Torch.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Player/Player.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Scenes/Doors.tres" type="TileSet" id=6]
+[ext_resource path="res://Music/Lazy Corridor.mp3" type="AudioStream" id=7]
 
 [node name="World" type="Node2D"]
 script = ExtResource( 3 )
@@ -52,3 +53,7 @@ position = Vector2( 285.266, 236.474 )
 
 [node name="Torch2" parent="YSort" instance=ExtResource( 4 )]
 position = Vector2( 88.4182, 186.922 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+autoplay = true

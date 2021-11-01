@@ -22,4 +22,5 @@ animations = [ {
 [node name="HitEffect" type="AnimatedSprite"]
 frames = SubResource( 3 )
 animation = "Animate"
+frame = 1
 script = ExtResource( 2 )

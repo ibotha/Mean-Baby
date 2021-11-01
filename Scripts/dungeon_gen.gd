@@ -22,6 +22,7 @@ onready var _tilemap_walls : TileMap = $Walls
 onready var _tilemap_floor : TileMap = $Floor
 onready var _tilemap_doors : TileMap = $Doors
 onready var _player = get_node("YSort/Player")
+onready var _ysort = get_node("YSort")
 
 var _rng := RandomNumberGenerator.new()
 var _array_door_positions = []
@@ -29,6 +30,7 @@ var _array_door_positions = []
 #WALKER
 const DIRECTIONS = [Vector2.RIGHT, Vector2.UP, Vector2.LEFT, Vector2.DOWN]
 const Exit = preload("res://Scenes/ExitDoor.tscn")
+const Enemy = preload("res://Entities/Enemies/Enemy.tscn")
 var walker_position = Vector2.ZERO
 var walker_direction = Vector2.RIGHT
 var borders = Rect2()
@@ -82,7 +84,7 @@ func fill_world() -> void:
 			_tilemap_floor.set_cell(x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 	_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 
-
+var enemies = []
 #region WALKER
 func generate_level():
 	var borders = Rect2(1, 1, size.x, size.y)
@@ -93,6 +95,11 @@ func generate_level():
 	#walker.queue_free()
 	for location in map:
 		_tilemap_walls.set_cellv(location, 1)
+		if rand_range(0, 100) < 1:
+			print("eneny spawned at " + str(location))
+			enemies.append(Enemy.instance())
+			_ysort.add_child(enemies[-1])
+			enemies[-1].global_position = location * _tilemap_walls.cell_size
 	_tilemap_walls.update_bitmask_region(borders.position, borders.end)
 
 
