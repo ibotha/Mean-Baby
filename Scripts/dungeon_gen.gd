@@ -1,5 +1,5 @@
 extends Node2D
-class_name dungeon_gen
+class_name dungeon_gen_rooms
 # Procedurally generates a tile-based map with a border.
 # Right click or press enter to re-generate the map.
 
@@ -39,10 +39,11 @@ var steps_since_turn = 0
 var rooms = []
 var exit
 
+#LOAD PREMADE ROOMS
+var room_collections = [preload("res://Scenes/Rooms/Room.tscn").instance()]
+
 func generate() -> void:
-	# Although there's no other nodes to use these signals, we're including them
-	# to show when and how to emit them.
-	# Watch our signals tutorial for more information.
+	#init, cleaup and prep
 	_tilemap_walls.clear()
 	_tilemap_doors.clear()
 	_tilemap_floor.clear()
@@ -56,9 +57,36 @@ func generate() -> void:
 	fill_world()
 	generate_level()
 	generate_doors()
+	load_custom_rooms(player_start_pos.x + 0.5, player_start_pos.y + 1)
 	
 	emit_signal("finished")
 
+
+func load_custom_rooms(x_offset, y_offset):
+	for room in room_collections:
+		var rooms_floors = room.get_node("Floor")
+		var rooms_walls = room.get_node("Walls")
+		print(rooms_floors.get_cell_size())
+		print(rooms_walls.get_cell_size())
+		
+		for x in rooms_floors.get_cell_size().x:
+			for y in rooms_floors.get_cell_size().y:
+				x += x_offset
+				y += y_offset
+				#rooms_floors.get_cell(x, y)
+				_tilemap_floor.set_cell(x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
+				print("placing floor with index : 0 at\tx: ", x, " y: ", y)
+		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
+		
+		
+		for x in rooms_walls.get_cell_size().x:
+			for y in rooms_walls.get_cell_size().y:
+				x += x_offset
+				y += y_offset
+				#rooms_walls.get_cell(x, y)
+				_tilemap_walls.set_cell(x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_walls))
+		_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
+	pass
 
 func generate_doors():
 	_tilemap_doors.set_cell(player_start_pos.x, player_start_pos.y, 0)
