@@ -10,12 +10,12 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node2D",
-"class": "dungeon_gen_rooms",
+"class": "dungeon_gen",
 "language": "GDScript",
 "path": "res://Scripts/dungeon_gen.gd"
 } ]
 _global_script_class_icons={
-"dungeon_gen_rooms": ""
+"dungeon_gen": ""
 }
 
 [application]

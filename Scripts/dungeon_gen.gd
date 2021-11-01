@@ -1,5 +1,5 @@
 extends Node2D
-class_name dungeon_gen_rooms
+class_name dungeon_gen
 # Procedurally generates a tile-based map with a border.
 # Right click or press enter to re-generate the map.
 
