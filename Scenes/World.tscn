@@ -43,7 +43,7 @@ position = Vector2( 152.17, 259.461 )
 position = Vector2( 130.593, 306.857 )
 
 [node name="Torch5" parent="YSort" instance=ExtResource( 4 )]
-position = Vector2( 185.899, 122.176 )
+position = Vector2( 192, 128 )
 
 [node name="Torch6" parent="YSort" instance=ExtResource( 4 )]
 position = Vector2( 248.778, 119.947 )
