@@ -80,36 +80,46 @@ func generate() -> void:
 
 
 func load_custom_rooms(map):
-	#Lets get the size of our current tilemap
-	for location in map:
-		min_x = location.x if location.x < min_x else min_x
-		max_x = location.x if location.x > max_x else max_x
-		min_y = location.y if location.y < min_y else min_y
-		max_y = location.y if location.y > max_y else max_y
-	
-	
-	
-	#=======================================================================================
-	#Lets get a random point outside of that, though it must not be too far so i use min+7 max-7
-	var random_x_pos = _rng.randi_range(min_x, max_x)
-	var random_y_pos = _rng.randi_range(min_y, max_y)
-	
-	while (random_x_pos >= min_x and random_x_pos <= max_x):
-		random_x_pos = _rng.randi_range(min_x - 7, max_x + 7)
-		print("I'm a random generator, lets test your luck for X.... and away we go... I selected: ", random_x_pos)
-		pass
-	
-	while (random_y_pos >= min_y and random_y_pos <= min_y):
-		random_y_pos = _rng.randi_range(min_y + 7, max_y - 7)
-		print("I'm a random generator, lets test your luck for Y.... and away we go... I selected: ", random_y_pos)
-		pass
-	
-	
-	
-	#=======================================================================================
-	#Create the room on our current tilemaps, both the floor and the walls
-	print("Room in pos: ", random_x_pos, ":", random_y_pos)
 	for room in room_collections:
+		#=======================================================================================
+		#Lets get the size of our current tilemap
+		for location in map:
+			min_x = location.x if location.x < min_x else min_x
+			max_x = location.x if location.x > max_x else max_x
+			min_y = location.y if location.y < min_y else min_y
+			max_y = location.y if location.y > max_y else max_y
+	
+	
+		#=======================================================================================
+		#Lets make sure the room is not 20 units of the door exit. otherwise we would block it off
+		#Lets get a random point outside of that, though it must not be too far so i use min+7 max-7
+		var random_x_pos = _rng.randi_range(min_x, max_x)
+		var random_y_pos = _rng.randi_range(min_y, max_y)
+		var distance_to_door = 0
+		while (distance_to_door < 20):
+			while (random_x_pos >= min_x and random_x_pos <= max_x):
+				random_x_pos = _rng.randi_range(min_x - 14, max_x + 7)
+				print("I'm a random generator, lets test your luck for X.... and away we go... I selected: ", random_x_pos)
+				pass
+			
+			while (random_y_pos >= min_y and random_y_pos <= min_y):
+				random_y_pos = _rng.randi_range(min_y + 14, max_y - 7)
+				print("I'm a random generator, lets test your luck for Y.... and away we go... I selected: ", random_y_pos)
+				pass
+			
+			print(get_end_room().position)
+			print(random_x_pos)
+			print(random_y_pos)
+			distance_to_door = (get_end_room().position).distance_to(Vector2(random_x_pos, random_y_pos))
+			if (distance_to_door < 20):
+				random_x_pos = _rng.randi_range(min_x - 14, max_x + 7)
+				random_y_pos = _rng.randi_range(min_y + 14, max_y - 7)
+			#print("Distance to door: ", distance_to_door)
+		print("Room in pos: ", random_x_pos, ":", random_y_pos)
+		
+		
+		#=======================================================================================
+		#Create the room on our current tilemaps, both the floor and the walls	
 		print(min_x, ":", max_x, ":", min_y, ":", max_y)
 		var rooms_floors = room.get_node("Floor")
 		var rooms_walls = room.get_node("Walls")
@@ -122,7 +132,7 @@ func load_custom_rooms(map):
 				if (rooms_walls.get_cell(x, y) == -1):
 					continue
 				_tilemap_walls.set_cell(random_x_pos + x, random_y_pos + y, -1)
-		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
+		#_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		
 		
 		for x in rooms_walls.get_cell_size().x:
@@ -130,7 +140,7 @@ func load_custom_rooms(map):
 				if (rooms_walls.get_cell(x, y) == -1):
 					continue
 				_tilemap_walls.set_cell(random_x_pos + x, random_y_pos + y, rooms_walls.get_cell(x, y))
-		_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
+		#_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		
 		
 		
@@ -155,7 +165,7 @@ func load_custom_rooms(map):
 
 		# Carve a path between two points
 		var pos1 = closest_vector
-		var pos2 = Vector2(random_x_pos + round(rooms_floors.get_cell_size().x / 2), random_y_pos + round(rooms_floors.get_cell_size().y / 2))
+		var pos2 = Vector2(random_x_pos + round(rooms_floors.get_cell_size().x / 2), random_y_pos + round(rooms_floors.get_cell_size().y / 2) - 3)
 		var x_diff = sign(pos2.x - pos1.x)
 		var y_diff = sign(pos2.y - pos1.y)
 		if x_diff == 0: x_diff = pow(-1.0, randi() % 2)
@@ -176,8 +186,9 @@ func load_custom_rooms(map):
 		
 		#It could be these bad bois? But I'm not entirely sure what bitmasks to
 		#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-		_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
-		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
+		#_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
+		#_tilemap_walls.update_bitmask_region(borders.position, borders.end)
+		#_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		print("==============================================")
 		print(closest_distance)
 		print(closest_vector)
