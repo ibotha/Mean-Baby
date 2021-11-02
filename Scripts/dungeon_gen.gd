@@ -99,22 +99,16 @@ func load_custom_rooms(map):
 		while (distance_to_door < 20):
 			while (random_x_pos >= min_x and random_x_pos <= max_x):
 				random_x_pos = _rng.randi_range(min_x - 14, max_x + 7)
-				print("I'm a random generator, lets test your luck for X.... and away we go... I selected: ", random_x_pos)
 				pass
 			
 			while (random_y_pos >= min_y and random_y_pos <= min_y):
 				random_y_pos = _rng.randi_range(min_y + 14, max_y - 7)
-				print("I'm a random generator, lets test your luck for Y.... and away we go... I selected: ", random_y_pos)
 				pass
-			
-			print(get_end_room().position)
-			print(random_x_pos)
-			print(random_y_pos)
+
 			distance_to_door = (get_end_room().position).distance_to(Vector2(random_x_pos, random_y_pos))
 			if (distance_to_door < 20):
 				random_x_pos = _rng.randi_range(min_x - 14, max_x + 7)
 				random_y_pos = _rng.randi_range(min_y + 14, max_y - 7)
-			#print("Distance to door: ", distance_to_door)
 		print("Room in pos: ", random_x_pos, ":", random_y_pos)
 		
 		
@@ -127,12 +121,10 @@ func load_custom_rooms(map):
 		for x in rooms_floors.get_cell_size().x:
 			for y in rooms_floors.get_cell_size().y:
 				_tilemap_floor.set_cell(random_x_pos + x, random_y_pos + y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
-				#_tilemap_floor.set_cell(random_x_pos + x, random_y_pos + y, rooms_floors.get_cell(x, y))
 				
 				if (rooms_walls.get_cell(x, y) == -1):
 					continue
 				_tilemap_walls.set_cell(random_x_pos + x, random_y_pos + y, -1)
-		#_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		
 		
 		for x in rooms_walls.get_cell_size().x:
@@ -140,18 +132,11 @@ func load_custom_rooms(map):
 				if (rooms_walls.get_cell(x, y) == -1):
 					continue
 				_tilemap_walls.set_cell(random_x_pos + x, random_y_pos + y, rooms_walls.get_cell(x, y))
-		#_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		
 		
 		
 		#=======================================================================================
 		#We create the path here, because all roads must lead to rome
-		#Its a little wow and weird magic I dont fully understand
-		#However i can promise i did test this over and over and
-		#It seems to work.
-		#
-		#Only things is... our roads are cursed with wierd shadows
-		#So we need to go through this section to fugure out why?
 		var closest_vector
 		var closest_distance = 100000
 		for location in map:
@@ -178,20 +163,14 @@ func load_custom_rooms(map):
 			x_y = pos2
 			y_x = pos1
 		for x in range(pos1.x, pos2.x, x_diff):
-			_tilemap_walls.set_cell(x, x_y.y, -1)
+			_tilemap_walls.set_cell(x, x_y.y, 1)
 			_tilemap_floor.set_cell(x, x_y.y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 		for y in range(pos1.y, pos2.y, y_diff):
-			_tilemap_walls.set_cell(y_x.x, y, -1)
+			_tilemap_walls.set_cell(y_x.x, y, 1)
 			_tilemap_floor.set_cell(y_x.x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 		
-		#It could be these bad bois? But I'm not entirely sure what bitmasks to
-		#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-		#_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
-		#_tilemap_walls.update_bitmask_region(borders.position, borders.end)
-		#_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
-		print("==============================================")
-		print(closest_distance)
-		print(closest_vector)
+		_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
+		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 	pass
 
 
