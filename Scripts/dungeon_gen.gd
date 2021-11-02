@@ -178,7 +178,7 @@ func load_custom_rooms(map):
 			_tilemap_floor.set_cell(y_x.x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 			_tilemap_floor.set_cell(y_x.x + x_diff, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 		
-		#It could be this bad bois? But I'm not entirle sure what bitmasks to
+		#It could be these bad bois? But I'm not entirely sure what bitmasks to
 		#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 		_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
