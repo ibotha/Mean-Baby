@@ -33,26 +33,17 @@ format = 1
 [node name="Player" parent="YSort" instance=ExtResource( 5 )]
 position = Vector2( 84.6911, 169.043 )
 
-[node name="Torch" parent="YSort" instance=ExtResource( 4 )]
-position = Vector2( 88.4182, 151.394 )
-
 [node name="Torch3" parent="YSort" instance=ExtResource( 4 )]
 position = Vector2( 152.17, 259.461 )
 
 [node name="Torch4" parent="YSort" instance=ExtResource( 4 )]
 position = Vector2( 130.593, 306.857 )
 
-[node name="Torch5" parent="YSort" instance=ExtResource( 4 )]
-position = Vector2( 185.899, 122.176 )
-
 [node name="Torch6" parent="YSort" instance=ExtResource( 4 )]
 position = Vector2( 248.778, 119.947 )
 
 [node name="Torch7" parent="YSort" instance=ExtResource( 4 )]
 position = Vector2( 285.266, 236.474 )
-
-[node name="Torch2" parent="YSort" instance=ExtResource( 4 )]
-position = Vector2( 88.4182, 186.922 )
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 7 )
