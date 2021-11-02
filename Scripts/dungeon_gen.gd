@@ -169,14 +169,10 @@ func load_custom_rooms(map):
 			y_x = pos1
 		for x in range(pos1.x, pos2.x, x_diff):
 			_tilemap_walls.set_cell(x, x_y.y, -1)
-			_tilemap_walls.set_cell(x, x_y.y + y_diff, -1)
 			_tilemap_floor.set_cell(x, x_y.y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
-			_tilemap_floor.set_cell(x, x_y.y + y_diff, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 		for y in range(pos1.y, pos2.y, y_diff):
 			_tilemap_walls.set_cell(y_x.x, y, -1)
-			_tilemap_walls.set_cell(y_x.x + x_diff, y, -1)
 			_tilemap_floor.set_cell(y_x.x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
-			_tilemap_floor.set_cell(y_x.x + x_diff, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 		
 		#It could be these bad bois? But I'm not entirely sure what bitmasks to
 		#VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -229,10 +225,12 @@ func generate_level():
 	#Create Enemies
 	for location in map:
 		if rand_range(0, 100) < 1:
-			print("eneny spawned at " + str(location))
-			enemies.append(Enemy.instance())
-			_ysort.add_child(enemies[-1])
-			enemies[-1].global_position = Vector2((location.x + 0.5) * grid_pixel_size, (location.y + 0.5) * grid_pixel_size)
+			var distance_to_player = location.distance_to(Vector2((player_start_pos.x + 0.5), (player_start_pos.y + 1)))
+			if distance_to_player >= 10:
+				print("eneny spawned at " + str(location), " distance to the player = ", distance_to_player)
+				enemies.append(Enemy.instance())
+				_ysort.add_child(enemies[-1])
+				enemies[-1].global_position = Vector2((location.x + 0.5) * grid_pixel_size, (location.y + 0.5) * grid_pixel_size)
 	
 	_tilemap_walls.update_bitmask_region(borders.position, borders.end)
 
