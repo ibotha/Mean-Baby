@@ -59,7 +59,9 @@ var min_y
 var max_x
 var max_y
 var room_collections = [
-		preload("res://Scenes/Rooms/Room.tscn").instance()
+		preload("res://Scenes/Rooms/Room.tscn").instance(),
+		preload("res://Scenes/Rooms/Dungeon.tscn").instance(),
+		preload("res://Scenes/Rooms/CourtRoom.tscn").instance()
 	]
 
 enum enemyDifficulties {
