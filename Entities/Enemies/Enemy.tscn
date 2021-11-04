@@ -11,11 +11,11 @@
 radius = 2.2939
 height = 3.27957
 
-[sub_resource type="CapsuleShape2D" id=15]
+[sub_resource type="CapsuleShape2D" id=2]
 radius = 3.22456
 height = 3.53032
 
-[sub_resource type="CircleShape2D" id=16]
+[sub_resource type="CircleShape2D" id=3]
 radius = 45.6341
 
 [node name="Enemy" type="KinematicBody2D"]
@@ -50,7 +50,7 @@ collision_layer = 16
 collision_mask = 2
 
 [node name="CollisionShape2D" parent="Hurtbox" index="0"]
-shape = SubResource( 15 )
+shape = SubResource( 2 )
 
 [node name="DetectionArea" parent="." instance=ExtResource( 5 )]
 modulate = Color( 0.505882, 1, 0.403922, 0.32549 )
@@ -58,7 +58,7 @@ show_behind_parent = true
 collision_mask = 32
 
 [node name="CollisionShape2D" parent="DetectionArea" index="0"]
-shape = SubResource( 16 )
+shape = SubResource( 3 )
 
 [connection signal="no_health" from="Stats" to="." method="_on_Stats_no_health"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
