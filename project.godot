@@ -9,12 +9,24 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "KinematicBody2D",
+"class": "Enemy",
+"language": "GDScript",
+"path": "res://Entities/Enemies/Enemy.gd"
+}, {
+"base": "Node2D",
+"class": "Room",
+"language": "GDScript",
+"path": "res://Scenes/Rooms/Room.gd"
+}, {
 "base": "Node2D",
 "class": "dungeon_gen",
 "language": "GDScript",
 "path": "res://Scripts/dungeon_gen.gd"
 } ]
 _global_script_class_icons={
+"Enemy": "",
+"Room": "",
 "dungeon_gen": ""
 }
 
