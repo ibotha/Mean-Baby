@@ -11,13 +11,16 @@ onready var flame = $Flame
 onready var flame_pivot = $FlamePivot
 onready var flame_destination = $FlamePivot/FlameDestination
 
+onready var health_bar = get_node("CanvasLayer/HealthBar/ColorRect")
+onready var mana_bar = get_node("CanvasLayer/ManaBar/ColorRect")
+
 export var MAX_SPEED = 80
 export var ACCELERATION = 500
 export var FRICTION = 500
 export var ROLL_SPEED = 100
 export var FLAME_SPEED = 30
 export var FIREBALL_SPEED = 300
-export var ATTACK_DELAY = 0.1
+export var ATTACK_DELAY = 0.333333
 
 enum {
 	MOVE,
@@ -31,16 +34,33 @@ var roll_vector = Vector2.DOWN
 var stats = PlayerStats
 var attack_cooldown = 0
 
+# Player stats
+var health = 100
+var health_max = 100
+var health_regeneration = 1
+var mana = 100
+var mana_max = 100
+var mana_regeneration = 5
+var mana_drain = 5
+
 func _ready():
 	stats.connect("no_health", self, "queue_free")
 	animation_tree.active = true
 	sword_hitbox.knockback_vector = roll_vector
 
 func _process(delta):
+	_handle_attack(delta)
+	_handle_health_mana(delta)
+
+func _handle_attack(delta):
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
 	else:
 		if Input.is_action_pressed("Attack"):
+			if (mana - mana_drain) < 0:
+				return
+			
+			mana = mana - mana_drain
 			attack_cooldown = ATTACK_DELAY
 			flame_animation_player.play("Shoot")
 			var fireball = FIREBALL_SCENE.instance()
@@ -48,6 +68,23 @@ func _process(delta):
 			fireball.global_rotation = flame_pivot.global_rotation
 			get_tree().get_root().add_child(fireball)
 
+
+func _handle_health_mana(delta):
+	# Regenerates mana
+	if (mana < 100):
+		var new_mana = min(mana + mana_regeneration * delta, mana_max)
+		if new_mana != mana:
+			mana = new_mana
+	mana_bar.rect_size.x = 72 * mana / mana_max
+
+	# Regenerates health
+	if (health < 100):
+		var new_health = min(health + health_regeneration * delta, health_max)
+		if new_health != health:
+			health = new_health
+	health_bar.rect_size.x = 72 * health / health_max
+		
+		
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
 	flame_pivot.look_at(get_global_mouse_position())

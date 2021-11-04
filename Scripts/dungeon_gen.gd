@@ -26,11 +26,11 @@ onready var _ysort = get_node("YSort")
 
 var _rng := RandomNumberGenerator.new()
 var _array_door_positions = []
+var gen_difficulty = 3
 
 #WALKER
 const DIRECTIONS = [Vector2.RIGHT, Vector2.UP, Vector2.LEFT, Vector2.DOWN]
 const Exit = preload("res://Scenes/ExitDoor.tscn")
-const Enemy = preload("res://Entities/Enemies/Enemy.tscn")
 var walker_position = Vector2.ZERO
 var walker_direction = Vector2.RIGHT
 var borders = Rect2()
@@ -40,17 +40,57 @@ var rooms = []
 var exit
 
 #ENEMIES
-var enemies = []
+var SMALL_ENEMY_SCENES = [
+	preload("res://Entities/Enemies/Skull.tscn")
+]
+var MEDIUM_ENEMY_SCENES = [
+	preload("res://Entities/Enemies/Goblin.tscn")
+]
+var LARGE_ENEMY_SCENES = [
+	preload("res://Entities/Enemies/Golem.tscn")
+]
+var BOSS_ENEMY_SCENES = [
+	preload("res://Entities/Enemies/Skull.tscn")
+]
 
 #LOAD PREMADE ROOMS
 var min_x
 var min_y
 var max_x
 var max_y
-var room_collections = [preload("res://Scenes/Rooms/Room.tscn").instance()]
+var room_collections = [
+		preload("res://Scenes/Rooms/Room.tscn").instance(),
+		preload("res://Scenes/Rooms/Dungeon.tscn").instance(),
+		preload("res://Scenes/Rooms/CourtRoom.tscn").instance()
+	]
 
+enum enemyDifficulties {
+	SMALL,
+	MEDIUM,
+	LARGE,
+	BOSS
+}
+
+func spawn_enemy(difficulty, position: Vector2):
+	var scene_list = SMALL_ENEMY_SCENES
+	match difficulty:
+		enemyDifficulties.SMALL:
+			scene_list = SMALL_ENEMY_SCENES
+		enemyDifficulties.MEDIUM:
+			scene_list = MEDIUM_ENEMY_SCENES
+		enemyDifficulties.LARGE:
+			scene_list = LARGE_ENEMY_SCENES
+	var enemy = scene_list[_rng.randi_range(0, scene_list.size() - 1)].instance()
+	_ysort.add_child(enemy)
+	enemy.get_node("Stats").max_health *= gen_difficulty
+	enemy.global_position = position
+	return enemy
+	
 
 func generate() -> void:
+	for room in room_collections:
+		add_child(room)
+		room.visible = false
 	#init, cleaup and prep
 	_tilemap_walls.clear()
 	_tilemap_doors.clear()
@@ -65,7 +105,6 @@ func generate() -> void:
 	max_y = player_start_pos.y
 	
 	_rng.randomize()
-	enemies.clear()
 	
 	#Emit the worked "started"
 	emit_signal("started")
@@ -115,6 +154,7 @@ func load_custom_rooms(map):
 		#=======================================================================================
 		#Create the room on our current tilemaps, both the floor and the walls	
 		print(min_x, ":", max_x, ":", min_y, ":", max_y)
+		
 		var rooms_floors = room.get_node("Floor")
 		var rooms_walls = room.get_node("Walls")
 		
@@ -132,25 +172,29 @@ func load_custom_rooms(map):
 				if (rooms_walls.get_cell(x, y) == -1):
 					continue
 				_tilemap_walls.set_cell(random_x_pos + x, random_y_pos + y, rooms_walls.get_cell(x, y))
-		
+
+		place_premade_room(Vector2(random_x_pos, random_y_pos), room)
+		#_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		
 		
 		#=======================================================================================
 		#We create the path here, because all roads must lead to rome
 		var closest_vector
 		var closest_distance = 100000
+		var room_vector = Vector2.ZERO
 		for location in map:
-			for x in rooms_floors.get_cell_size().x:
-				for y in rooms_floors.get_cell_size().y:
-					var current_distance = location.distance_to(Vector2(random_x_pos + x, random_y_pos + y))
+			for cell in room.control_tilemap.get_used_cells():
+				if (room.control_tilemap.get_cellv(cell) == 1):
+					var current_distance = location.distance_to(Vector2(random_x_pos, random_y_pos) + cell)
 					
 					if (current_distance < closest_distance):
 						closest_distance = current_distance
+						room_vector = cell
 						closest_vector = location
 
 		# Carve a path between two points
 		var pos1 = closest_vector
-		var pos2 = Vector2(random_x_pos + round(rooms_floors.get_cell_size().x / 2), random_y_pos + round(rooms_floors.get_cell_size().y / 2) - 3)
+		var pos2 = Vector2(random_x_pos, random_y_pos) + room_vector
 		var x_diff = sign(pos2.x - pos1.x)
 		var y_diff = sign(pos2.y - pos1.y)
 		if x_diff == 0: x_diff = pow(-1.0, randi() % 2)
@@ -168,11 +212,39 @@ func load_custom_rooms(map):
 		for y in range(pos1.y, pos2.y, y_diff):
 			_tilemap_walls.set_cell(y_x.x, y, 1)
 			_tilemap_floor.set_cell(y_x.x, y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
+			
+		
+		_tilemap_walls.set_cellv(pos2, -1)
+		_tilemap_floor.set_cell(pos2.x, pos2.y, 0, false, false, false, get_subtile_with_priority(0, _tilemap_floor))
 		
 		_tilemap_walls.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 		_tilemap_floor.update_bitmask_region(Vector2(0, 0), Vector2(0, 0))
 	pass
 
+func place_premade_room(position, room: Room) -> bool:
+	var rooms_floors : TileMap = room.get_node("Floor")
+	var rooms_walls : TileMap = room.get_node("Walls")
+	
+	for cell in rooms_floors.get_used_cells():
+		_tilemap_floor.set_cellv(position + cell,
+		rooms_floors.get_cellv(cell))
+		
+	for cell in rooms_walls.get_used_cells():
+		_tilemap_walls.set_cellv(position + cell,
+		rooms_walls.get_cellv(cell))
+		
+	for cell in room.control_tilemap.get_used_cells():
+		print(cell)
+		var difficulty_map = {
+			2: enemyDifficulties.MEDIUM,
+			4: enemyDifficulties.LARGE,
+			5: enemyDifficulties.SMALL
+		}
+		if room.control_tilemap.get_cellv(cell) in [2, 4, 5]:
+			spawn_enemy(difficulty_map[room.control_tilemap.get_cellv(cell)], _tilemap_floor.map_to_world(position + cell) + Vector2(0.5, 0.5) * _tilemap_floor.cell_size)
+			
+	return true
+	
 
 func generate_doors():
 	_tilemap_doors.set_cell(player_start_pos.x, player_start_pos.y, 0)
@@ -211,16 +283,6 @@ func generate_level():
 	
 	#Create custom rooms
 	load_custom_rooms(map)
-
-	#Create Enemies
-	for location in map:
-		if rand_range(0, 100) < 1:
-			var distance_to_player = location.distance_to(Vector2((player_start_pos.x + 0.5), (player_start_pos.y + 1)))
-			if distance_to_player >= 10:
-				print("eneny spawned at " + str(location), " distance to the player = ", distance_to_player)
-				enemies.append(Enemy.instance())
-				_ysort.add_child(enemies[-1])
-				enemies[-1].global_position = Vector2((location.x + 0.5) * grid_pixel_size, (location.y + 0.5) * grid_pixel_size)
 	
 	_tilemap_walls.update_bitmask_region(borders.position, borders.end)
 

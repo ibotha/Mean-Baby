@@ -758,7 +758,7 @@ collision_layer = 0
 [node name="Sprite" type="AnimatedSprite" parent="Flame"]
 position = Vector2( 0.591, 0 )
 frames = SubResource( 58 )
-frame = 5
+frame = 2
 playing = true
 
 [node name="Light2D" type="Light2D" parent="Flame/Sprite"]
@@ -769,6 +769,50 @@ shadow_enabled = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Flame"]
 shape = SubResource( 59 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HealthBar" type="ColorRect" parent="CanvasLayer"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 82.0
+margin_bottom = 17.0
+rect_pivot_offset = Vector2( 77.7321, 1 )
+color = Color( 0, 0, 0, 0.627451 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/HealthBar"]
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 73.0
+margin_bottom = 8.0
+color = Color( 1, 0, 0, 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="ManaBar" type="ColorRect" parent="CanvasLayer"]
+margin_left = 240.0
+margin_top = 8.0
+margin_right = 314.0
+margin_bottom = 17.0
+rect_pivot_offset = Vector2( 77.7321, 1 )
+color = Color( 0, 0, 0, 0.627451 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/ManaBar"]
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 73.0
+margin_bottom = 8.0
+color = Color( 0, 0, 1, 1 )
+__meta__ = {
+"_edit_lock_": true
+}
 
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 
