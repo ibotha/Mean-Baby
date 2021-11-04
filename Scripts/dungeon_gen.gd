@@ -26,7 +26,7 @@ onready var _ysort = get_node("YSort")
 
 var _rng := RandomNumberGenerator.new()
 var _array_door_positions = []
-var gen_difficulty = 1
+var gen_difficulty = 3
 
 #WALKER
 const DIRECTIONS = [Vector2.RIGHT, Vector2.UP, Vector2.LEFT, Vector2.DOWN]
@@ -41,16 +41,16 @@ var exit
 
 #ENEMIES
 var SMALL_ENEMY_SCENES = [
-	preload("res://Entities/Enemies/Enemy.tscn")
+	preload("res://Entities/Enemies/Skull.tscn")
 ]
 var MEDIUM_ENEMY_SCENES = [
-	preload("res://Entities/Enemies/Enemy.tscn")
+	preload("res://Entities/Enemies/Goblin.tscn")
 ]
 var LARGE_ENEMY_SCENES = [
-	preload("res://Entities/Enemies/Enemy.tscn")
+	preload("res://Entities/Enemies/Golem.tscn")
 ]
 var BOSS_ENEMY_SCENES = [
-	preload("res://Entities/Enemies/Enemy.tscn")
+	preload("res://Entities/Enemies/Skull.tscn")
 ]
 
 #LOAD PREMADE ROOMS
@@ -76,8 +76,13 @@ func spawn_enemy(difficulty, position: Vector2):
 	match difficulty:
 		enemyDifficulties.SMALL:
 			scene_list = SMALL_ENEMY_SCENES
+		enemyDifficulties.MEDIUM:
+			scene_list = MEDIUM_ENEMY_SCENES
+		enemyDifficulties.LARGE:
+			scene_list = LARGE_ENEMY_SCENES
 	var enemy = scene_list[_rng.randi_range(0, scene_list.size() - 1)].instance()
 	_ysort.add_child(enemy)
+	enemy.get_node("Stats").max_health *= gen_difficulty
 	enemy.global_position = position
 	return enemy
 	
@@ -230,8 +235,13 @@ func place_premade_room(position, room: Room) -> bool:
 		
 	for cell in room.control_tilemap.get_used_cells():
 		print(cell)
+		var difficulty_map = {
+			2: enemyDifficulties.MEDIUM,
+			4: enemyDifficulties.LARGE,
+			5: enemyDifficulties.SMALL
+		}
 		if room.control_tilemap.get_cellv(cell) in [2, 4, 5]:
-			spawn_enemy(enemyDifficulties.SMALL, _tilemap_floor.map_to_world(position + cell))
+			spawn_enemy(difficulty_map[room.control_tilemap.get_cellv(cell)], _tilemap_floor.map_to_world(position + cell) + Vector2(0.5, 0.5) * _tilemap_floor.cell_size)
 			
 	return true
 	
@@ -273,14 +283,6 @@ func generate_level():
 	
 	#Create custom rooms
 	load_custom_rooms(map)
-
-	#Create Enemies
-	for location in map:
-		if rand_range(0, 100) < 1:
-			var distance_to_player = location.distance_to(Vector2((player_start_pos.x + 0.5), (player_start_pos.y + 1)))
-			if distance_to_player >= 10:
-				print("eneny spawned at " + str(location), " distance to the player = ", distance_to_player)
-				spawn_enemy(enemyDifficulties.SMALL, _tilemap_walls.map_to_world(location))
 	
 	_tilemap_walls.update_bitmask_region(borders.position, borders.end)
 

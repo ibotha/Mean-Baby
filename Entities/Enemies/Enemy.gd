@@ -8,9 +8,9 @@ onready var stats = $Stats
 var velocity = Vector2.ZERO
 var target = null
 
-export var MAX_SPEED = 70
-export var ACCELLERATION = 300
-export var FRICTION = 200
+export var MAX_SPEED = 40
+export var ACCELLERATION = 150
+export var FRICTION = 100
 
 enum states {
 	IDLE,
@@ -32,11 +32,14 @@ func _physics_process(delta):
 			_chase_state(delta)
 		states.ATTACK:
 			_attack_state(delta)
-		
-	if abs(velocity.x) > abs(velocity.y):
-		animatedSprite.play("Left" if velocity.x < 0 else "Right")
+	
+	if (velocity.length_squared() > 0.001):	
+		if abs(velocity.x) > abs(velocity.y):
+			animatedSprite.play("Left" if velocity.x < 0 else "Right")
+		else:
+			animatedSprite.play("Up" if velocity.y < 0 else "Down")
 	else:
-		animatedSprite.play("Up" if velocity.y < 0 else "Down")
+		animatedSprite.play("Idle")
 	
 	velocity = move_and_slide(velocity)
 
