@@ -16,6 +16,11 @@ func get_size():
 		print(_size)
 	return _size
 	
+func get_special_cell():
+	for cell in control_tilemap.get_used_cells():
+		if control_tilemap.get_cellv(cell) == 0:
+			return cell
+	
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	print("Ready")
