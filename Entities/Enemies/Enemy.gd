@@ -23,6 +23,7 @@ var state = states.IDLE
 var attack_cooldown = 0
 var damage = 5
 var attack_distance = 10
+var last_known_player_location = Vector2.ZERO
 
 func _ready():
 	pass # Replace with function body.
@@ -53,18 +54,24 @@ func _idle_state(delta):
 	velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 
 func _chase_state(delta):
-	if (global_position.distance_to(target.global_position) <= attack_distance):
+	if (target != null):
+		last_known_player_location = target.global_position
+
+	if (global_position.distance_to(last_known_player_location) <= attack_distance):
 		state = states.ATTACK
 		velocity = Vector2.ZERO
 		_attack_state(delta)
 		return
 	
-	velocity = velocity.move_toward((target.global_position - global_position).normalized() * MAX_SPEED, ACCELLERATION * delta)
+	velocity = velocity.move_toward((last_known_player_location - global_position).normalized() * MAX_SPEED, ACCELLERATION * delta)
 			
 	
 func _attack_state(delta):
-	if (global_position.distance_to(target.global_position) > attack_distance):
-		velocity = velocity.move_toward((target.global_position - global_position).normalized() * MAX_SPEED, ACCELLERATION * delta)
+	if (target != null):
+		last_known_player_location = target.global_position
+
+	if (global_position.distance_to(last_known_player_location) > attack_distance):
+		velocity = velocity.move_toward((last_known_player_location - global_position).normalized() * MAX_SPEED, ACCELLERATION * delta)
 		state = states.CHASE
 		
 	if attack_cooldown > 0:
@@ -72,7 +79,9 @@ func _attack_state(delta):
 		return
 	
 	attack_cooldown = ATTACK_DELAY
-	target.stats.health -= damage
+	
+	if (target != null):
+		target.stats.health -= damage
 	
 
 func _on_DetectionArea_entity_list_changed():
@@ -81,7 +90,10 @@ func _on_DetectionArea_entity_list_changed():
 		state = states.CHASE
 	else:
 		target = null
-		state = states.IDLE
+		print(last_known_player_location)
+		print(global_position.distance_to(last_known_player_location))
+		if (global_position.distance_to(last_known_player_location) < 4):
+			state = states.IDLE
 
 
 func _on_Hurtbox_area_entered(area):

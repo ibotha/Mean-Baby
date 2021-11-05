@@ -19,8 +19,6 @@ func _physics_process(delta):
 
 
 func _on_Hitbox_area_entered(_area):
-	print(_area.get_parent().name)
-	print(global_position.direction_to(_area.get_parent().position))
 	if (_area.get_parent().stats.character_type == _area.get_parent().stats.PLAYER):
 		_area.get_parent().knockback_pos_hit = global_position
 	#_area.get_parent().velocity += global_position.direction_to(_area.get_parent().position) * 10
