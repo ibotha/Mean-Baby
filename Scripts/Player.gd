@@ -34,8 +34,7 @@ var velocity = Vector2.ZERO
 var roll_vector = Vector2.DOWN
 var stats = PlayerStats
 var attack_cooldown = 0
-var knockback_timer = 0
-var knockback_pos_hit = Vector2.ZERO
+var knockback_froce = Vector2.ZERO
 
 func _ready():
 	stats.connect("no_health", self, "queue_free")
@@ -85,15 +84,7 @@ func _handle_health_mana(delta):
 	else:
 		stats.invulnerability_timer -= delta
 		
-	if (knockback_pos_hit != Vector2.ZERO):
-		knockback_timer -= delta
-		knockback_pos_hit.x = lerp(knockback_pos_hit.x, knockback_pos_hit.x, 0)
-		knockback_pos_hit.y = lerp(knockback_pos_hit.y, knockback_pos_hit.y, 0)
-		#apply_impulse(Vector2.ZERO, global_position.direction_to(knockback_pos_hit) * 5)
-		#velocity += global_position.direction_to(knockback_pos_hit) * 5 * delta
-		#move(global_position.rotated(global_position.angle_to_point(knockback_pos_hit)) * 5 * delta)
-		pass
-		
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
 	flame_pivot.look_at(get_global_mouse_position())
@@ -104,7 +95,6 @@ func _physics_process(delta):
 	match(state):
 		MOVE:
 			MoveState(delta)
-			
 		ROLL:
 			RollState(delta)
 
@@ -132,7 +122,8 @@ func MoveState(delta):
 	animation_tree.set("parameters/conditions/Rolling", false)
 
 	# Move Player
-	velocity = move_and_slide(velocity)
+	velocity = move_and_slide(velocity + knockback_froce)
+	knockback_froce = lerp(knockback_froce, Vector2.ZERO, 0.1)
 	
 	# Update animation states
 	if velocity.length_squared() > 0:
@@ -143,6 +134,10 @@ func MoveState(delta):
 	# State transitions
 	if Input.is_action_just_pressed("Roll"):
 		state = ROLL
+
+func KnockbackPlayer(knockback_pos_hit, add_force=true):
+	if (add_force == true):
+		knockback_froce = (global_position-knockback_pos_hit).normalized() * 25
 
 func AttackState(delta):
 	animation_state.travel("Attack")

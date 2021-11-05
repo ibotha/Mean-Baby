@@ -73,13 +73,14 @@ func _attack_state(delta):
 	if (global_position.distance_to(last_known_player_location) > attack_distance):
 		velocity = velocity.move_toward((last_known_player_location - global_position).normalized() * MAX_SPEED, ACCELLERATION * delta)
 		state = states.CHASE
+		return
 		
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
 		return
 	
 	attack_cooldown = ATTACK_DELAY
-	
+
 	if (target != null):
 		target.stats.health -= damage
 	
@@ -90,8 +91,6 @@ func _on_DetectionArea_entity_list_changed():
 		state = states.CHASE
 	else:
 		target = null
-		print(last_known_player_location)
-		print(global_position.distance_to(last_known_player_location))
 		if (global_position.distance_to(last_known_player_location) < 4):
 			state = states.IDLE
 
