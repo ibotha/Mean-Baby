@@ -72,7 +72,7 @@ func _attack_state(delta):
 		return
 	
 	attack_cooldown = ATTACK_DELAY
-	target.health -= damage
+	target.stats.health -= damage
 	
 
 func _on_DetectionArea_entity_list_changed():

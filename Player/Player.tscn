@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=2]
+[gd_scene load_steps=70 format=2]
 
 [ext_resource path="res://Player/Player-sheet.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
@@ -670,6 +670,39 @@ animations = [ {
 [sub_resource type="CircleShape2D" id=59]
 radius = 1.92999
 
+[sub_resource type="Animation" id=60]
+resource_name = "Damage"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 0, 0, 1 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=61]
+resource_name = "Invulnerable"
+length = 0.4
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 0, 0, 0, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
 [node name="Player" type="KinematicBody2D"]
 collision_layer = 32
 script = ExtResource( 2 )
@@ -758,7 +791,7 @@ collision_layer = 0
 [node name="Sprite" type="AnimatedSprite" parent="Flame"]
 position = Vector2( 0.591, 0 )
 frames = SubResource( 58 )
-frame = 2
+frame = 5
 playing = true
 
 [node name="Light2D" type="Light2D" parent="Flame/Sprite"]
@@ -813,6 +846,10 @@ color = Color( 0, 0, 1, 1 )
 __meta__ = {
 "_edit_lock_": true
 }
+
+[node name="AnimationDamage" type="AnimationPlayer" parent="."]
+anims/Damage = SubResource( 60 )
+anims/Invulnerable = SubResource( 61 )
 
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_Hurtbox_area_entered"]
 

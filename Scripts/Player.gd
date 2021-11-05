@@ -10,6 +10,7 @@ onready var sword_hitbox = $HitboxPivot/SwordHitbox
 onready var flame = $Flame
 onready var flame_pivot = $FlamePivot
 onready var flame_destination = $FlamePivot/FlameDestination
+onready var animation_damage = $AnimationDamage
 
 onready var health_bar = get_node("CanvasLayer/HealthBar/ColorRect")
 onready var mana_bar = get_node("CanvasLayer/ManaBar/ColorRect")
@@ -33,20 +34,14 @@ var velocity = Vector2.ZERO
 var roll_vector = Vector2.DOWN
 var stats = PlayerStats
 var attack_cooldown = 0
-
-# Player stats
-var health = 100
-var health_max = 100
-var health_regeneration = 1
-var mana = 100
-var mana_max = 100
-var mana_regeneration = 5
-var mana_drain = 5
+var knockback_timer = 0
+var knockback_pos_hit = Vector2.ZERO
 
 func _ready():
 	stats.connect("no_health", self, "queue_free")
 	animation_tree.active = true
 	sword_hitbox.knockback_vector = roll_vector
+	stats.character_type = stats.PLAYER
 
 func _process(delta):
 	_handle_attack(delta)
@@ -57,10 +52,10 @@ func _handle_attack(delta):
 		attack_cooldown -= delta
 	else:
 		if Input.is_action_pressed("Attack"):
-			if (mana - mana_drain) < 0:
+			if (stats.mana - stats.mana_drain) < 0:
 				return
 			
-			mana = mana - mana_drain
+			stats.mana = stats.mana - stats.mana_drain
 			attack_cooldown = ATTACK_DELAY
 			flame_animation_player.play("Shoot")
 			var fireball = FIREBALL_SCENE.instance()
@@ -71,19 +66,33 @@ func _handle_attack(delta):
 
 func _handle_health_mana(delta):
 	# Regenerates mana
-	if (mana < 100):
-		var new_mana = min(mana + mana_regeneration * delta, mana_max)
-		if new_mana != mana:
-			mana = new_mana
-	mana_bar.rect_size.x = 72 * mana / mana_max
+	if (stats.mana < 100):
+		var new_mana = min(stats.mana + stats.mana_regeneration * delta, stats.get_max_mana())
+		if new_mana != stats.mana:
+			stats.mana = new_mana
+	mana_bar.rect_size.x = 72 * stats.mana / stats.get_max_mana()
 
 	# Regenerates health
-	if (health < 100):
-		var new_health = min(health + health_regeneration * delta, health_max)
-		if new_health != health:
-			health = new_health
-	health_bar.rect_size.x = 72 * health / health_max
+	if (stats.health < 100):
+		var new_health = min(stats.health + stats.health_regeneration * delta, stats.get_max_health())
+		if new_health != stats.health:
+			stats.health = new_health
+	health_bar.rect_size.x = 72 * stats.health / stats.get_max_health()
+	
+	if (stats.invulnerability_timer <= 0):
+		animation_damage.stop(true)
+		animation_damage.seek(0, true)
+	else:
+		stats.invulnerability_timer -= delta
 		
+	if (knockback_pos_hit != Vector2.ZERO):
+		knockback_timer -= delta
+		knockback_pos_hit.x = lerp(knockback_pos_hit.x, knockback_pos_hit.x, 0)
+		knockback_pos_hit.y = lerp(knockback_pos_hit.y, knockback_pos_hit.y, 0)
+		#apply_impulse(Vector2.ZERO, global_position.direction_to(knockback_pos_hit) * 5)
+		#velocity += global_position.direction_to(knockback_pos_hit) * 5 * delta
+		#move(global_position.rotated(global_position.angle_to_point(knockback_pos_hit)) * 5 * delta)
+		pass
 		
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
@@ -152,4 +161,9 @@ func RollAnimationFinished():
 
 
 func _on_Hurtbox_area_entered(area):
-	stats.health -= area.damage
+	if (stats.invulnerability_timer <= 0):
+		animation_damage.play("Damage")
+		animation_damage.queue("Invulnerable")
+		stats.health -= area.damage
+		health_bar.rect_size.x = 72 * stats.health / stats.get_max_health()
+		stats.set_invulnerability_timer(stats.max_invulnerability_timer)

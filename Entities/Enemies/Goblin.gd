@@ -9,9 +9,11 @@ extends Enemy
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
-	stats.set_max_health(rand_range(4, 7))
-	stats.character_type = stats.GOLEM
-	MAX_SPEED = 30
+	stats.set_max_health(rand_range(1, 3))
+	stats.character_type = stats.GOBLIN
+	MAX_SPEED = 200
+	ACCELLERATION = 150
+	FRICTION = 80
 	pass # Replace with function body.
 
 
