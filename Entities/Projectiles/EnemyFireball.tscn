@@ -31,13 +31,13 @@ animations = [ {
 "speed": 10.0
 } ]
 
-[node name="Fireball" type="Node2D"]
+[node name="EnemyFireball" type="Node2D"]
 script = ExtResource( 3 )
 
 [node name="Hitbox" parent="." instance=ExtResource( 2 )]
 position = Vector2( 3.29723, 0.140306 )
-collision_layer = 2
-collision_mask = 17
+collision_layer = 8
+collision_mask = 5
 
 [node name="CollisionShape2D" parent="Hitbox" index="0"]
 shape = SubResource( 1 )
@@ -47,7 +47,6 @@ position = Vector2( 1.29723, 0.140306 )
 rotation = 1.5708
 frames = SubResource( 6 )
 animation = "Fireball"
-frame = 1
 playing = true
 
 [connection signal="area_entered" from="Hitbox" to="." method="_on_Hitbox_area_entered"]
