@@ -7,7 +7,7 @@ signal started
 signal finished
 
 export var perimeter_size := Vector2(10, 10)
-export var room_count = 5
+export var room_count = 3
 export var gen_difficulty = 3
 
 ## Public variables
@@ -17,8 +17,8 @@ export var gen_difficulty = 3
 onready var _tilemap_walls : TileMap = $Walls
 onready var _tilemap_floor : TileMap = $Floor
 onready var _tilemap_doors : TileMap = $Doors
-onready var _player = get_node("YSort/Player")
-onready var _ysort = get_node("YSort")
+onready var _entities = $YSort/Entities
+onready var _player = $YSort/Player
 
 var _rng := RandomNumberGenerator.new()
 
@@ -58,7 +58,8 @@ var BOSS_ENEMY_SCENES = [
 var room_instances = [
 	preload("res://Scenes/Rooms/Room.tscn").instance(),
 	preload("res://Scenes/Rooms/Dungeon.tscn").instance(),
-	preload("res://Scenes/Rooms/CourtRoom.tscn").instance()
+	preload("res://Scenes/Rooms/CourtRoom.tscn").instance(),
+	preload("res://Scenes/Rooms/DeanRoom.tscn").instance()
 ]
 
 enum {
@@ -87,7 +88,7 @@ func spawn_enemy(difficulty, position: Vector2):
 		enemyDifficulties.LARGE:
 			scene_list = LARGE_ENEMY_SCENES
 	var enemy = scene_list[_rng.randi_range(0, scene_list.size() - 1)].instance()
-	_ysort.add_child(enemy)
+	_entities.add_child(enemy)
 	enemy.get_node("Stats").max_health *= gen_difficulty
 	enemy.global_position = position
 	return enemy
@@ -269,7 +270,7 @@ func place_rooms(graph: RoomNode, previous: RoomNode):
 		print("end")
 		var exit = EXIT_SCENE.instance()
 		exit.global_position = _tilemap_walls.map_to_world(graph.room.get_special_cell() + graph.allocation.position) + (_tilemap_walls.cell_size / 2)
-		_ysort.add_child(exit)
+		_entities.add_child(exit)
 		exit.connect("leaving_level", self, "generate")
 		
 
@@ -291,6 +292,11 @@ func fill_space(graph: RoomNode):
 	fill_space(graph.offshoot2)
 
 func generate() -> void:
+	var entities = _entities.get_children()
+	for entity in entities:
+		entity.queue_free()
+	
+	
 	_tilemap_doors.clear()
 	_tilemap_floor.clear()
 	_tilemap_walls.clear()
